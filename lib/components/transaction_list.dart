@@ -19,7 +19,7 @@ class TransactionList extends StatelessWidget {
                 Container(
                   height: constraints.maxHeight * 0.15,
                   child: const Text(
-                    'Nenhuma transação cadastrada!',
+                    'No transaction registered!',
                   ),
                 ),
                 SizedBox(
@@ -51,7 +51,7 @@ class TransactionList extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(6),
                       child: FittedBox(
-                        child: Text('R\$${tr.value}'),
+                        child: Text('\$${tr.value}'),
                       ),
                     ),
                   ),
@@ -59,12 +59,12 @@ class TransactionList extends StatelessWidget {
                     tr.title,
                   ),
                   subtitle: Text(
-                    DateFormat('d MMM y').format(tr.date),
+                    DateFormat('MMM d y').format(tr.date),
                   ),
                   trailing: MediaQuery.of(context).size.width > 500
                       ? TextButton.icon(
                           onPressed: () => onRemove(tr.id),
-                          label: const Text('Excluir'),
+                          label: const Text('Delete'),
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.red,

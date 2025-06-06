@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'components/transaction_form.dart';
 import 'components/transaction_list.dart';
 import 'models/transaction.dart';
@@ -10,7 +12,7 @@ main() => runApp(ExpensesApp());
 
 class ExpensesApp extends StatelessWidget {
   ExpensesApp({super.key});
-  final ThemeData tema = ThemeData();
+  final ThemeData theme = ThemeData();
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +76,35 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [];
   bool _showChart = false;
 
+  @override
+  void initState() {
+    super.initState();
+    loadList();
+  }
+
+  Future<void> loadList() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> listJson = prefs.getStringList('Transaction') ?? [];
+    List<Transaction> loadedTransactions = listJson.map((transaction) {
+      Map<String, dynamic> map =
+          Map<String, dynamic>.from(jsonDecode(transaction));
+      return Transaction.fromMap(map);
+    }).toList();
+
+    setState(() {
+      _transactions.clear();
+      _transactions.addAll(loadedTransactions);
+    });
+  }
+
+  Future<void> salvelist() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> listJson = _transactions
+        .map((transactions) => jsonEncode(transactions.toMap()))
+        .toList();
+    await prefs.setStringList('Transaction', listJson);
+  }
+
   List<Transaction> get _recentTransactions {
     return _transactions.where((tr) {
       return tr.date.isAfter(
@@ -95,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _transactions.add(newTransaction);
     });
-
+    salvelist();
     Navigator.of(context).pop();
   }
 
@@ -103,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _transactions.removeWhere((tr) => tr.id == id);
     });
+    salvelist();
   }
 
   _openTransactioFormModal(BuildContext context) {
@@ -120,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
     bool isLandscape = mediaQuery.orientation == Orientation.landscape;
 
     final appBar = AppBar(
-      title: const Text('Despesas pessoais'),
+      title: const Text('Personal Expenses'),
       actions: <Widget>[
         if (isLandscape == true)
           IconButton(
