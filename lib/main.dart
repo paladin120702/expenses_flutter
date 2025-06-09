@@ -18,11 +18,13 @@ class ExpensesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: const MyHomePage(),
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: false,
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
+          centerTitle: true,
           titleTextStyle: TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 20,
